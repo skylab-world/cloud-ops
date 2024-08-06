@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: cloud-ops
-        image: <your-docker-image>
+        image: skylabworld.com/cloud/ops
         ports:
         - containerPort: 8080
         envFrom:
