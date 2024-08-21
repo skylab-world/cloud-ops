@@ -1,0 +1,23 @@
+module(
+    name = "cloud-ops",
+    version = "0.1.0",  # Specify your module version
+)
+
+# Define the registry or repositories where Bazel should look for modules
+bazel_dep(name = "rules_go", version = "0.49.0")
+bazel_dep(name = "gazelle", version = "0.38.0")
+
+# Specify the direct dependencies of your module
+# You can also specify any additional dependencies here if needed
+
+# If you have any custom repositories or patches, you can define them here
+# For example, if you have a custom repository, you can use:
+# use_repo(name = "custom_repo", url = "http://example.com/custom_repo")
+
+# Optionally, specify any overrides or patches
+# For example, if you need to override a dependency version:
+# override_dep(name = "some_dep", version = "1.2.3")
+
+# If you have any custom toolchain configurations, you can specify them here
+# For example, if you need to register a custom toolchain:
+# register_toolchain(name = "custom_toolchain")
