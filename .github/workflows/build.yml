@@ -39,4 +39,4 @@ jobs:
       # run tests for non releases (on push only since release means it has already been tested)
       if: ${{ github.event_name != 'release' }}
       run: |
-        docker run --rm ghcr.io/${{ github.repository }}:latest bazel test 
+        docker run --rm ghcr.io/${{ github.repository }}:latest bazelisk test

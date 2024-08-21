@@ -1,7 +1,7 @@
 # Stage 1: Build and Test
 FROM ubuntu:20.04 as builder
 
-# Install Bazelisk and other dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
@@ -9,8 +9,11 @@ RUN apt-get update && apt-get install -y \
     openjdk-11-jdk-headless \
     python3 \
     python3-distutils \
-    bazelisk \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Bazelisk manually
+RUN curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.20.0/bazelisk-linux-amd64 -o /usr/local/bin/bazel && \
+    chmod +x /usr/local/bin/bazel
 
 WORKDIR /app
 
