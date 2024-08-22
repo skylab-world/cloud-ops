@@ -28,7 +28,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push Docker image
+    - name: Build (includes running tests) and push Docker image
       uses: docker/build-push-action@v6
       with:
         context: .
@@ -36,10 +36,4 @@ jobs:
         push: ${{ github.event_name == 'release' }} # pushing docker image on release only to avoid cluttering the registry
         tags: |
           ghcr.io/${{ github.repository }}:latest
-          ghcr.io/${{ github.repository }}:${{ github.ref_name }}
-
-    - name: Run tests
-      # run tests for non releases (on push only since release means it has already been tested)
-      if: ${{ github.event_name != 'release' }}
-      run: |
-        docker run --rm ghcr.io/${{ github.repository }}:latest bazelisk test
+          ${{ github.event_name == 'release' && format('ghcr.io/{0}:{1}', github.repository, github.ref_name) || format('ghcr.io/{0}:pr-{1}', github.repository, github.event.pull_request.number) }}

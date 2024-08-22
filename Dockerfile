@@ -1,45 +1,34 @@
-# Stage 1: Build and Test
-FROM ubuntu:20.04 AS builder
+# Use the official Go image as the base image
+FROM golang:1.21-bullseye AS builder
 
-# Set environment variable to prevent interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    unzip \
-    build-essential \
-    openjdk-11-jdk-headless \
-    python3 \
-    python3-distutils \
-    tzdata \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Bazelisk manually
-RUN curl -L https://github.com/bazelbuild/bazelisk/releases/download/v1.20.0/bazelisk-linux-amd64 -o /usr/local/bin/bazelisk && \
-    chmod +x /usr/local/bin/bazelisk
-
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the entire project
-COPY . .
+# Copy go mod and sum files
+COPY go.mod go.sum ./
 
-# Run Bazel tests
-RUN /usr/local/bin/bazelisk test //...
+# Download all dependencies
+RUN go mod download
 
-# Build the application using Bazel
-RUN /usr/local/bin/bazelisk build //cmd:cloud-ops
+# Copy the source code into the container
+COPY . /app
 
-# Stage 2: Production
-FROM alpine:3.18
+# Run tests
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -v ./...
 
-WORKDIR /app
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o cloud-ops ./cmd
 
-# Copy the binary from the builder stage
-COPY --from=builder /app/bazel-bin/cmd/cloud-ops/cloud-ops .
+# Start a new stage from scratch
+FROM alpine:latest  
 
-# Expose the application port
-EXPOSE 8080
+# Install ca-certificates for HTTPS
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+# Copy the pre-built binary file from the previous stage
+COPY --from=builder /app/cloud-ops .
 
 # Command to run the application
 CMD ["./cloud-ops"]

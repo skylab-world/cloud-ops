@@ -20,9 +20,15 @@ go_library(
 
 go_test(
     name = "cloudops_tests",
+    size = "small",  # Options: small, medium, large, enormous
+    timeout = "short",  # Options: short, moderate, long, eternal
     srcs = glob(["**/*_test.go"]),  # Automatically include all _test.go files in current and subdirectories
     embed = [":go_default_library"],
     importpath = "github.com/skylab-world/cloud-ops/cmd",
-    timeout = "short",  # Options: short, moderate, long, eternal
-    size = "small",     # Options: small, medium, large, enormous
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["main_test.go"],
+    embed = [":go_default_library"],
 )
