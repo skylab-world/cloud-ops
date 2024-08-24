@@ -1,7 +1,0 @@
-.env
-*.log
-
-# Ignore Bazel output directories
-bazel-*
-
-MODULE.bazel.lock
